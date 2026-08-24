@@ -2,12 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>vite-scaffold</title>
+    <title>Ron Sui — AI Agent Entrance</title>
+    <meta
+      name="description"
+      content="Chi-Jung Sui (Ron) — educator and builder at the edge of AI agents in education."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <div id="app"></div>
+    <canvas id="scene"></canvas>
+    <button id="lang-toggle" type="button" aria-label="Switch language"></button>
+    <main id="overlay">
+      <div class="card">
+        <p class="handle" id="handle"></p>
+        <h1 id="name"></h1>
+        <p class="tagline" id="tagline"></p>
+        <ul class="tags" id="tags"></ul>
+        <nav class="links" id="links"></nav>
+      </div>
+    </main>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
