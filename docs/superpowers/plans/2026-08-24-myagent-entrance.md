@@ -624,7 +624,7 @@ export class ParticleNetwork {
   private mobile: boolean;
   private raf = 0;
 
-  constructor(private canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement) {
     this.mobile = isMobile();
     const nodeCount = this.mobile ? NODE_COUNT_MOBILE : NODE_COUNT_DESKTOP;
 
@@ -849,7 +849,7 @@ export class ParticleNetwork {
   private glowColor = new THREE.Color(GLOW_COLOR);
   private raf = 0;
 
-  constructor(private canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement) {
     this.mobile = isMobile();
     const nodeCount = this.mobile ? NODE_COUNT_MOBILE : NODE_COUNT_DESKTOP;
 
