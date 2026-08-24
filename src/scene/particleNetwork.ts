@@ -5,6 +5,8 @@ const NODE_COUNT_MOBILE = 80;
 const CONNECT_DISTANCE = 2.2;
 const MOBILE_BREAKPOINT = 768;
 const BOUND = 8;
+const BASE_COLOR = 0x38bdf8;
+const GLOW_COLOR = 0x8b5cf6;
 
 export function isMobile(): boolean {
   return window.innerWidth < MOBILE_BREAKPOINT || 'ontouchstart' in window;
@@ -20,6 +22,10 @@ export class ParticleNetwork {
   private lineGeometry: THREE.BufferGeometry;
   private lineSegments: THREE.LineSegments;
   private mobile: boolean;
+  private mouse = new THREE.Vector2(0, 0);
+  private targetRotation = new THREE.Vector2(0, 0);
+  private baseColor = new THREE.Color(BASE_COLOR);
+  private glowColor = new THREE.Color(GLOW_COLOR);
   private raf = 0;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -44,6 +50,7 @@ export class ParticleNetwork {
 
     this.nodePositions = new Float32Array(nodeCount * 3);
     this.nodeVelocities = new Float32Array(nodeCount * 3);
+    const nodeColors = new Float32Array(nodeCount * 3);
     for (let i = 0; i < nodeCount; i++) {
       this.nodePositions[i * 3] = (Math.random() - 0.5) * 16;
       this.nodePositions[i * 3 + 1] = (Math.random() - 0.5) * 10;
@@ -51,16 +58,20 @@ export class ParticleNetwork {
       this.nodeVelocities[i * 3] = (Math.random() - 0.5) * 0.004;
       this.nodeVelocities[i * 3 + 1] = (Math.random() - 0.5) * 0.004;
       this.nodeVelocities[i * 3 + 2] = (Math.random() - 0.5) * 0.004;
+      nodeColors[i * 3] = this.baseColor.r;
+      nodeColors[i * 3 + 1] = this.baseColor.g;
+      nodeColors[i * 3 + 2] = this.baseColor.b;
     }
 
     const nodeGeometry = new THREE.BufferGeometry();
     nodeGeometry.setAttribute('position', new THREE.BufferAttribute(this.nodePositions, 3));
+    nodeGeometry.setAttribute('color', new THREE.BufferAttribute(nodeColors, 3));
     const nodeMaterial = new THREE.PointsMaterial({
-      color: 0x38bdf8,
       size: 0.08,
       transparent: true,
       opacity: 0.9,
       sizeAttenuation: true,
+      vertexColors: true,
     });
     this.nodes = new THREE.Points(nodeGeometry, nodeMaterial);
     this.scene.add(this.nodes);
@@ -71,7 +82,7 @@ export class ParticleNetwork {
     this.lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
     this.lineGeometry.setDrawRange(0, 0);
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x8b5cf6,
+      color: GLOW_COLOR,
       transparent: true,
       opacity: 0.35,
     });
@@ -80,8 +91,18 @@ export class ParticleNetwork {
 
     this.scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
+    if (!this.mobile) {
+      window.addEventListener('mousemove', this.onMouseMove);
+    }
     window.addEventListener('resize', this.onResize);
   }
+
+  private onMouseMove = (event: MouseEvent): void => {
+    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    this.targetRotation.x = this.mouse.y * 0.15;
+    this.targetRotation.y = this.mouse.x * 0.15;
+  };
 
   private onResize = (): void => {
     this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -134,11 +155,43 @@ export class ParticleNetwork {
     (this.lineGeometry.attributes.position as THREE.BufferAttribute).needsUpdate = true;
   }
 
+  private updateGlow(): void {
+    if (this.mobile) return;
+    this.scene.updateMatrixWorld();
+    const positions = this.nodePositions;
+    const colors = (this.nodes.geometry.attributes.color as THREE.BufferAttribute)
+      .array as Float32Array;
+    const nodeCount = positions.length / 3;
+    const worldPos = new THREE.Vector3();
+
+    for (let i = 0; i < nodeCount; i++) {
+      worldPos.set(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
+      this.nodes.localToWorld(worldPos);
+      worldPos.project(this.camera);
+      const dx = worldPos.x - this.mouse.x;
+      const dy = worldPos.y - this.mouse.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const proximity = Math.max(0, 1 - dist / 0.25);
+      const c = this.baseColor.clone().lerp(this.glowColor, proximity);
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
+    }
+    (this.nodes.geometry.attributes.color as THREE.BufferAttribute).needsUpdate = true;
+  }
+
   private animate = (): void => {
     this.raf = requestAnimationFrame(this.animate);
     this.updateNodes();
     this.updateConnections();
+
     this.scene.rotation.y += 0.0006;
+    if (!this.mobile) {
+      this.scene.rotation.x += (this.targetRotation.x - this.scene.rotation.x) * 0.02;
+      this.scene.rotation.y += (this.targetRotation.y - this.scene.rotation.y) * 0.02;
+      this.updateGlow();
+    }
+
     this.renderer.render(this.scene, this.camera);
   };
 
@@ -148,6 +201,7 @@ export class ParticleNetwork {
 
   dispose(): void {
     cancelAnimationFrame(this.raf);
+    window.removeEventListener('mousemove', this.onMouseMove);
     window.removeEventListener('resize', this.onResize);
     this.nodes.geometry.dispose();
     (this.nodes.material as THREE.Material).dispose();
