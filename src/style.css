@@ -40,31 +40,34 @@ body {
 }
 
 .card {
-  max-width: 560px;
+  max-width: 600px;
   width: 100%;
-  padding: 40px 36px;
-  border-radius: 20px;
+  padding: 64px 56px;
+  border-radius: 24px;
   background: rgba(5, 7, 15, 0.55);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  box-shadow: 0 0 60px rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  box-shadow: 0 0 70px rgba(56, 189, 248, 0.08);
   text-align: center;
   pointer-events: auto;
 }
 
 .handle {
-  font-size: 0.85rem;
-  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 8px;
+  margin-bottom: 14px;
 }
 
 #name {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 600;
-  margin-bottom: 16px;
+  font-size: clamp(2.25rem, 6vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 22px;
   background: linear-gradient(120deg, var(--text) 40%, var(--accent) 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -72,52 +75,76 @@ body {
 }
 
 .tagline {
-  font-size: 1.05rem;
-  color: var(--text-dim);
-  margin-bottom: 28px;
-  line-height: 1.6;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--text);
+  opacity: 0.72;
+  max-width: 30em;
+  margin: 0 auto 36px;
+  line-height: 1.55;
 }
 
 .tags {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .tags li {
-  padding: 6px 14px;
-  font-size: 0.8rem;
+  padding: 7px 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   border-radius: 999px;
-  border: 1px solid rgba(139, 92, 246, 0.35);
-  color: var(--text);
-  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(230, 237, 247, 0.16);
+  color: var(--text-dim);
+  background: transparent;
 }
 
 .links {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 14px;
   justify-content: center;
 }
 
 .links a {
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-radius: 10px;
   border: 1px solid rgba(56, 189, 248, 0.4);
   color: var(--text);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
+  font-weight: 500;
   transition:
     background 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .links a:hover {
   background: rgba(56, 189, 248, 0.15);
   border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* Primary CTA — the second link (AISI Platform, per copy.ts link order) reads as
+   the flagship destination, styled like a filled primary button against the two
+   secondary outlined links (Academic Site, GitHub). */
+.links a:nth-child(2) {
+  background: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 100%);
+  border-color: transparent;
+  color: #05070f;
+  font-weight: 600;
+}
+
+.links a:nth-child(2):hover {
+  background: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 100%);
+  filter: brightness(1.08);
+  transform: translateY(-1px);
 }
 
 #lang-toggle {
@@ -141,14 +168,14 @@ body {
 
 @media (max-width: 640px) {
   .card {
-    padding: 28px 22px;
+    padding: 40px 28px;
   }
 
   #name {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
 
   .tagline {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 }
