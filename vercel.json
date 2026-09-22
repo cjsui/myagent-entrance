@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/(.*)", "destination": "https://aiark.myagent.tw/$1", "permanent": false }
+  ]
+}
